@@ -111,11 +111,19 @@ class GameWindow:
         def toggle_music():
             self.music_on = not self.music_on
             if self.music_on:
-                pygame.mixer.music.play(-1)
+                try:
+                    pygame.mixer.music.play(-1)
+                except Exception as e:
+                    print(f"[Warning] Could not play music: {e}")
+                    self.music_on = False  # Reset state if playback fails
             else:
                 pygame.mixer.music.stop()
+            # Update button text
+            self.sound_buttons[0].text = lambda: f"Music {'On' if self.music_on else 'Off'}"
         def toggle_sound():
             self.sound_on = not self.sound_on
+            # Update button text
+            self.sound_buttons[1].text = lambda: f"Sound {'On' if self.sound_on else 'Off'}"
         def next_theme():
             from gui.themes import next_theme as theme_next, get_current_theme
             self.theme = theme_next()
@@ -336,7 +344,7 @@ class GameWindow:
         import pygame
         import os
         # Load background music and sound effect (placeholder files)
-        music_path = os.path.join('assets', 'music', 'bgm.ogg')
+        music_path = os.path.join('assets', 'music', 'bgm.wav')
         sound_path = os.path.join('assets', 'sounds', 'move.wav')
         pygame.mixer.init()
         self.move_sound = None
